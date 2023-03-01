@@ -1,17 +1,18 @@
-community patterns,,
-community pattern,,
-community structure,,
+search_term,envo_id,envo_term
+community patterns,PCO_0000004,quality of an ecological community
+community pattern,PCO_0000004,quality of an ecological community
+community structure,PCO_0000004,quality of an ecological community
 plant communities,,
 plant community,,
-habitat,,
-habitats,,
-communities,,
-community,,
+habitat,ENVO_01000739,habitat
+habitats,ENVO_01000739,habitat
+communities,PCO_0000002,ecological community
+community,PCO_0000002,ecological community
 food webs,,
 food web,,
-populations,,
-population,,
-species,,
+populations,PCO_0000001,population of organisms
+population,PCO_0000001,population of organisms
+species,NCBITaxon_species,species
 consumers,,
 consumer,,
 predators,,
@@ -21,4 +22,5 @@ invasive species,,
 plant species,,
 species lists,,
 species list,,
-community,PCO_0000002,ecological community
+,PCO_0000019,community species diversity
+,PCO_0000010,community species richness
