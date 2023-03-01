@@ -1,0 +1,91 @@
+search_term,envo_id,envo_term
+agricultural,ENVO_00000077,agricultural ecosystem
+agriculture,ENVO_00000077,agricultural ecosystem
+alpine,ENVO_01001835,alpine biome
+aquatic,ENVO_01001787,aquatic ecosystem
+atoll,ENVO:00000130,reef
+atolls,ENVO:00000130,reef
+bog\W,ENVO_00000044,peatland
+bogs\W,ENVO_00000044,peatland
+catchment,ENVO_00000292,watershed
+catchments,ENVO_00000292,watershed
+chapparel,ENVO_00000300,scrubland area
+city,ENVO_01000249,urban biome
+coral reef,ENVO_00000150,coral reef
+coral reefs,ENVO_00000150,coral reef
+coral,ENVO_00000150,coral reef
+corals,ENVO_00000150,coral reef
+creek,ENVO_00000023,stream
+creeks,ENVO_00000023,stream
+desert,ENVO:01001780,desert ecosystem
+deserts,ENVO:01001780,desert ecosystem
+dune,ENVO_00000170,dune
+dunes,ENVO_00000170,dune
+estuaries,ENVO_00000045,estuary
+estuarine,ENVO_00000045,estuary
+estuarine,ENVO_00000045,estuary
+estuary,ENVO_00000045,estuary
+fen\W,ENVO_00000232,fen
+fens\W,ENVO_00000232,fen
+flood plain,ENVO_00000255,flood plain
+floodplain,ENVO_00000255,flood plain
+forest,ENVO_01001243,forest ecosystem
+forests,ENVO_01001243,forest ecosystem
+fresh water,ENVO_01001789,freshwater ecosystem
+freshwater,ENVO_01001789,freshwater ecosystem
+grassland,ENVO_01001206,grassland ecosystem
+grasslands,ENVO_01001206,grassland ecosystem
+hammock,ENVO_00000516,hammock
+hummock,ENVO_00000516,hammock
+intertidal,ENVO_01001468,intertidal ecosystem
+lake,ENVO_00000020,lake
+lakes,ENVO_00000020,lake
+mangrove,ENVO_01000181,mangrove biome
+mangroves,ENVO_01000181,mangrove biome
+marine,ENVO_01001788,marine ecosystem
+marsh,ENVO_00000035,marsh
+marshes,ENVO_00000035,marsh
+meadow,ENVO_00000108,meadow ecosystem
+meadows,ENVO_00000108,meadow ecosystem
+montane,ENVO:01001836,montane biome
+mountain,ENVO_00000081,mountain
+mountains,ENVO_00000081,mountain
+ocean,ENVO:01000048,ocean biome
+ocean current,ENVO_00000147,ocean current
+ocean currents,ENVO_00000147,ocean current
+oceans,ENVO:01000048,ocean biome
+peatland,ENVO_00000044,peatland
+peatlands,ENVO_00000044,peatland
+playa,ENVO:00000196,alkali flat
+playas,ENVO:00000196,alkali flat
+pond,ENVO_00000033,pond
+ponds,ENVO_00000033,pond
+reef,ENVO:00000130,reef
+reefs,ENVO:00000130,reef
+reservoir,ENVO_00000025,reservoir
+residential,ENVO_01000249,urban biome
+river,ENVO_00000022,river
+rivers,ENVO_00000022,river
+savanna,ENVO_01000178,savanna biome
+savannah,ENVO_01000178,savanna biome
+scrub,ENVO_00000300,scrubland area
+scrubland,ENVO_00000300,scrubland area
+sea\W,ENVO:01000048,ocean biome
+stream,ENVO_00000023,stream
+streams,ENVO_00000023,stream
+terrestrial,ENVO_01001790,terrestrial ecosystem
+thermokarst,ENVO_03000085 ,thermokarst
+tidal,ENVO_01001468,intertidal ecosystem
+tide,ENVO_01001468,intertidal ecosystem
+tides,ENVO_01001468,intertidal ecosystem
+tundra,ENVO_01001370,tundra ecosystem
+tundras,ENVO_01001370,tundra ecosystem
+urban,ENVO_01000249,urban biome
+water column,ENVO_06105011,water column
+water columns,ENVO_06105011,water column
+watershed,ENVO_00000292,watershed
+watersheds,ENVO_00000292,watershed
+wetland,ENVO_01001209,wetland ecosystem
+wetlands,ENVO_01001209,wetland ecosystem
+salt marsh,ENVO:00000054,saline marsh
+salt marshes,ENVO:00000054,saline marsh
