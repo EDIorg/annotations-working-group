@@ -1,26 +1,27 @@
-search_term,envo_id,envo_term
-community patterns,PCO_0000004,quality of an ecological community
-community pattern,PCO_0000004,quality of an ecological community
-community structure,PCO_0000004,quality of an ecological community
-plant communities,,
-plant community,,
-habitat,ENVO_01000739,habitat
-habitats,ENVO_01000739,habitat
-communities,PCO_0000002,ecological community
-community,PCO_0000002,ecological community
-food webs,,
-food web,,
-populations,PCO_0000001,population of organisms
-population,PCO_0000001,population of organisms
-species,NCBITaxon_species,species
-consumers,,
-consumer,,
-predators,,
-predator,,
-endangered species,,
-invasive species,,
-plant species,,
-species lists,,
-species list,,
-,PCO_0000019,community species diversity
-,PCO_0000010,community species richness
+search_term,envo_id,envo_term,envThes_id,envThes_term,envThes_comment
+community patterns,PCO_0000004,quality of an ecological community,http://vocabs.lter-europe.net/EnvThes/21471,community pattern,
+community pattern,PCO_0000004,quality of an ecological community,http://vocabs.lter-europe.net/EnvThes/21471,community pattern,
+community structure,PCO_0000004,quality of an ecological community,http://vocabs.lter-europe.net/EnvThes/21472,community structure,
+plant communities,PCO_0000002,ecological community,http://vocabs.lter-europe.net/EnvThes/20513,plant community,
+plant community,PCO_0000002,ecological community,http://vocabs.lter-europe.net/EnvThes/20513,plant community,
+habitat,ENVO_01000739,habitat,http://vocabs.lter-europe.net/EnvThes/21894,habitat,
+habitats,ENVO_01000739,habitat,http://vocabs.lter-europe.net/EnvThes/21894,hatitat,
+communities,PCO_0000002,ecological community,http://vocabs.lter-europe.net/EnvThes/20510,community,
+community,PCO_0000002,ecological community,http://vocabs.lter-europe.net/EnvThes/20510,community,
+food webs,ECOCORE_00000001,food web,http://vocabs.lter-europe.net/EnvThes/20702,food web,
+food web,ECOCORE_00000001,food web,http://vocabs.lter-europe.net/EnvThes/20702,food web,
+populations,PCO_0000001,population of organisms,http://vocabs.lter-europe.net/EnvThes/20715,population,
+population,PCO_0000001,population of organisms,http://vocabs.lter-europe.net/EnvThes/20715,population,
+species,NCBITaxon_species,species,http://vocabs.lter-europe.net/EnvThes/20717,species,
+consumers,ECOCORE_00000010,heterotroph,http://vocabs.lter-europe.net/EnvThes/20703,consumer,
+consumer,ECOCORE_00000010,heterotroph,http://vocabs.lter-europe.net/EnvThes/20703,consumer,
+predators,ECOCORE_00000089,predator,http://vocabs.lter-europe.net/EnvThes/20710,predator,
+predator,ECOCORE_00000089,predator,http://vocabs.lter-europe.net/EnvThes/20710,predator,
+endangered species,OMIT_0026696,Endangered Species,http://vocabs.lter-europe.net/EnvThes/20721,endangered species,
+threatened species,OMIT_0026696,Endangered Species,http://vocabs.lter-europe.net/EnvThes/20721,endangered species,
+invasive species,OMIT_0027396,Introduced Species,http://vocabs.lter-europe.net/EnvThes/20728,invasive species,
+plant species,PCO_0000002,ecological community,http://vocabs.lter-europe.net/EnvThes/20739,plant species,
+species lists,PCO_0000002,ecological community,http://vocabs.lter-europe.net/EnvThes/22286,species list,a variable
+species list,PCO_0000002,ecological community,http://vocabs.lter-europe.net/EnvThes/22286,species list,a variable
+,,,,,
+ecosystem,ENVO_01001110,ecosystem,,,
