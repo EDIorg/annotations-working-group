@@ -1,0 +1,34 @@
+search_term,envo_id,envo_term,envThes_id,envThes_term,envThes_comment,Colin's mapping ID,Colin's mapping term,suggested level 1,suggested level 2,envo_comments
+air,ENVO_00002005,air,http://vocabs.lter-europe.net/EnvThes/23,air,,,,air,,
+atmosphere,ENVO_01000267,atmosphere,http://vocabs.lter-europe.net/EnvThes/21920,atmosphere,,,,air,,
+atmospheric,ENVO_01000267,atmosphere,http://vocabs.lter-europe.net/EnvThes/21920,atmosphere,,,,air,,
+basin,ENVO_00000291,drainage basin,http://vocabs.lter-europe.net/EnvThes/20529,basin,,ENVO_03000015,geographic basin,landscape,,"already in ecosystem, ENVO also as geographic basin"
+building,ENVO_00000073,building,http://vocabs.lter-europe.net/EnvThes/30268,building,,,,landscape,,
+canopies,ENVO_01001242,canopy,http://vocabs.lter-europe.net/EnvThes/10249,canopy,,ENVO:01001239,forest canopy,layer,,
+canopy,ENVO_01001242,canopy,http://vocabs.lter-europe.net/EnvThes/10249,canopy,,ENVO:01001239,forest canopy,layer,,
+forest floor,ENVO_01001582,forest floor,http://vocabs.lter-europe.net/EnvThes/20912,forest floor,,,,layer,,
+fresh water,ENVO_00002011,fresh water,http://vocabs.lter-europe.net/EnvThes/20914,freshwater,,ENVO:01001320,fresh water body,water,,
+freshwater,ENVO_00002011,fresh water,http://vocabs.lter-europe.net/EnvThes/20914,freshwater,,ENVO:01001320,fresh water body,water,,
+ground water,ENVO_01001004,groundwater,http://vocabs.lter-europe.net/EnvThes/20917,groundwater,,,,water,,
+groundwater,ENVO_01001004,groundwater,http://vocabs.lter-europe.net/EnvThes/20917,groundwater,,,,water,,
+hillslope,ENVO_01000333,hillside,http://vocabs.lter-europe.net/EnvThes/20532,hillslope,,,,landscape,,
+humic soil,ENVO_00001998,soil,http://vocabs.lter-europe.net/EnvThes/24,soil,,,,soil,,
+hyporheic zone,ENVO_00000501,submerged bed,http://vocabs.lter-europe.net/EnvThes/21903,hyporheic zone,,ENVO:00000383,stream bed,layer,,ENVO term questionable
+ice,ENVO_01000277,water ice,http://vocabs.lter-europe.net/EnvThes/20918,ice,,,,water,,
+mesic soil,ENVO_00001998,soil,http://vocabs.lter-europe.net/EnvThes/24,soil,,,,soil,,
+mud,ENVO_01000001,mud,http://vocabs.lter-europe.net/EnvThes/21914,mud soil,,,,soil,,
+organic layer,ENVO_03600018,organic horizon,http://vocabs.lter-europe.net/EnvThes/21906,organic layer,,,,layer,,
+permafrost,ENVO_00000134,permafrost,http://vocabs.lter-europe.net/EnvThes/20919,permafrost,,,,landscape,,
+rhizosphere,ENVO_00005801,rhizosphere,http://vocabs.lter-europe.net/EnvThes/21924,rhizosphere,,,,layer,,
+road,ENVO_00000064,road,,,,,,,,
+sand,ENVO_01000017,sand,http://vocabs.lter-europe.net/EnvThes/20920,sand,,,,soil,,
+sea water,ENVO_00002149,sea water,http://vocabs.lter-europe.net/EnvThes/20921,seawater,,,,water,,
+seawater,ENVO_00002149,sea water,http://vocabs.lter-europe.net/EnvThes/20921,seawater,,,,water,,
+sediment,ENVO_00002007,sediment,http://vocabs.lter-europe.net/EnvThes/20899,sediment,,,,sediment,,
+snow,ENVO_01000406,snow,http://vocabs.lter-europe.net/EnvThes/20923,snow,,,,water,,
+snow depth,,,http://vocabs.lter-europe.net/EnvThes/22240,snow depth,,ENVO_01000406,snow,,,measuement
+snow water equivalence,,,http://vocabs.lter-europe.net/EnvThes/22242,snow water equivalent,,,,,,measuement
+soil,ENVO_00001998,soil,http://vocabs.lter-europe.net/EnvThes/24,soil,,,,soil,,
+soil horizon,ENVO_03600030,soil horizon,http://vocabs.lter-europe.net/EnvThes/39,soil horizon,,,,soil,,
+water column,ENVO_06105011,water column,http://vocabs.lter-europe.net/EnvThes/20924,water column,,,,water,,
+water table,,,http://vocabs.lter-europe.net/EnvThes/30028,water table,,ENVO:00000329,phreatic zone,,,measurement
