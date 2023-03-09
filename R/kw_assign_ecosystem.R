@@ -11,9 +11,9 @@ search_term_path <- "search_term_mappings"
 output_path <- "assigned_kw"
 
 # Read in current keyword / search term path
-df_datasets <- read.csv(paste(input_path, 'datasetKeywords.csv', sep = '/'), as.is = T, header = T)
+df_datasets <- read.csv(file.path(input_path, 'datasetKeywords.csv'), as.is = T, header = T)
 
-search_term <- read.csv(paste(search_term_path,'search_term_mapping_ecosystem.csv', sep = '/'), header = T, as.is = T)
+search_term <- read.csv(file.path(search_term_path,'search_term_mapping_ecosystem.csv'), header = T, as.is = T)
 
 # Make an empty dataframe to write stuff into
 df_ds_subset <- data.frame(packageid = character(0),
@@ -88,7 +88,7 @@ df_ds_remove <- df_ds_out %>%
 df_ds_out <- anti_join(df_ds_out, df_ds_remove, by = "record_id")
 
 # Export output
-write.csv(df_ds_out, file = paste(output_path,'ecosystem.csv', sep = '/'), row.names = F)
+write.csv(df_ds_out, file = file.path(output_path,'ecosystem.csv'), row.names = F)
 
 # Wrangle this object into wide format
 df_ds_out_wide <- df_ds_out %>%
@@ -97,7 +97,7 @@ df_ds_out_wide <- df_ds_out %>%
   spread(ecosystem_term, exist)
 
 # Export the wide information
-write.csv(df_ds_out_wide, file = paste(output_path, 'ecosystem_wide.csv', sep = '/'), na = '', row.names = F)
+write.csv(df_ds_out_wide, file = file.path(output_path, 'ecosystem_wide.csv'), na = '', row.names = F)
 # no ecosystem information
 
 # Identify cases where the ecosystem is present
@@ -111,4 +111,4 @@ df_scope <- distinct(df_eco_scope, scope)
 df_eco_abs <- anti_join(df_datasets, df_eco_pres, by = c('packageid'))
 
 # Export the set of files that lack ecosystem information
-write.csv(df_eco_abs, file = paste(output_path, 'no_ecosystem.csv', sep = '/'), row.names = F)
+write.csv(df_eco_abs, file = file.path(output_path, 'no_ecosystem.csv'), row.names = F)
