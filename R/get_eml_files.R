@@ -29,34 +29,34 @@ scopes <- c("edi", "knb-lter-and", "knb-lter-arc", "knb-lter-bes",
             "knb-lter-sev", "knb-lter-sgs", "knb-lter-vcr",
             "msb-cap", "msb-paleon", "msb-tempbiodev")
 
-
+# For each scope...
 for (j in 1:length(scopes)) {
   
   #get all identifiers for each scope
-  
   identifiers <- list_data_package_identifiers(scopes[j])
   
+  # For each identifier (within each scope)...
   for (i in 1:length(identifiers)) {
     
     #get newest revision for each identifier
-    
     revision <- list_data_package_revisions(scope = scopes[j],
                                             identifier = identifiers[i],
                                             filter = "newest")
     
-    package_id <- paste(scopes[j],identifiers[i],revision, sep = ".")
+    # Identify package ID
+    package_id <- paste(scopes[j], identifiers[i], revision, sep = ".")
     
     #get EML file using above function
+    eml_xml <- purrr::map(.x = package_id, .f = poss_get_eml)
     
-    eml_xml <- map(.x = package_id, .f = poss_get_eml)
-    
-    # catch the case when no file is returned or save what is returned
-    
+    # If a file is returned (if not, then ends this iteration of loop and continues)
     if (!is.null(eml_xml[[1]])){
       
+      # Identify file name
       file_name <- paste(package_id, 'xml', sep = '.')
       
-      write_xml(eml_xml[[1]], file = paste(eml_path,  file_name, sep = "/"))
+      # Save XML
+      write_xml(eml_xml[[1]], file = file.path(eml_path,  file_name))
     }
     
   }
