@@ -6,7 +6,6 @@ library(xml2)
 library(tidyverse)
 
 # this function catches html return errors. EML files that are not public will be ignored
-
 poss_get_eml <- possibly(.f = read_metadata, otherwise = NULL)
 
 # directory to store EML files, not in git
@@ -14,7 +13,10 @@ eml_path <- "eml_files"
 
 # Create a folder to download to if it doesn't exist locally (yet)
 ## This folder is not checked into git so won't be retrieved at clone
-dir.create(path = "eml_files", showWarnings = F)
+dir.create(path = eml_path, showWarnings = F)
+
+# Identify any file(s) that have already been downloaded
+downloaded_xmls <- dir(path = eml_path)
 
 # Define scopes
 scopes <- c("edi", "knb-lter-and", "knb-lter-arc", "knb-lter-bes",
@@ -46,20 +48,30 @@ for (j in 1:length(scopes)) {
     # Identify package ID
     package_id <- paste(scopes[j], identifiers[i], revision, sep = ".")
     
-    #get EML file using above function
-    eml_xml <- purrr::map(.x = package_id, .f = poss_get_eml)
+    # Identify file name
+    file_name <- paste0(package_id, '.xml')
     
-    # If a file is returned (if not, then ends this iteration of loop and continues)
-    if (!is.null(eml_xml[[1]])){
+    # If the file has already been downloaded, skip it with a message
+    if(file_name %in% downloaded_xmls){
+      message("XML ", i, " of ", length(identifiers), " already downloaded")
       
-      # Identify file name
-      file_name <- paste(package_id, 'xml', sep = '.')
+      # If the file *hasn't* already been downloaded...
+    } else {
       
-      # Save XML
-      write_xml(eml_xml[[1]], file = file.path(eml_path,  file_name))
+      # Get EML file using above function
+      eml_xml <- purrr::map(.x = package_id, .f = poss_get_eml)
+      
+      # If a file is returned, save it (if not, then ends this iteration of loop and continues)
+      if (!is.null(eml_xml[[1]])){
+        write_xml(eml_xml[[1]], file = file.path(eml_path,  file_name))
+        
+        # Print success message per downloaded XML
+        message("Downloaded XML ", i, " of ", length(identifiers))
+      }
     }
-    
   }
   
+  # Print finished message for scope too
+  message("Finished downloading identifiers in scope: '", scopes[j], "'")
 }
 
