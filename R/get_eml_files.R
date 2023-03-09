@@ -10,9 +10,13 @@ library(tidyverse)
 poss_get_eml <- possibly(.f = read_metadata, otherwise = NULL)
 
 # directory to store EML files, not in git
-
 eml_path <- "eml_files"
 
+# Create a folder to download to if it doesn't exist locally (yet)
+## This folder is not checked into git so won't be retrieved at clone
+dir.create(path = "eml_files", showWarnings = F)
+
+# Define scopes
 scopes <- c("edi", "knb-lter-and", "knb-lter-arc", "knb-lter-bes",
             "knb-lter-ble", "knb-lter-bnz", "knb-lter-cap",
             "knb-lter-cce", "knb-lter-cdr", "knb-lter-cwt",
