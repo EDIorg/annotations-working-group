@@ -16,7 +16,7 @@ eml_path <- "eml_files"
 dir.create(path = eml_path, showWarnings = F)
 
 # Identify any file(s) that have already been downloaded
-downloaded_xmls <- dir(path = eml_path)
+downloaded_xmls <- list.files(path = eml_path, pattern = '*.xml')
 
 # Define scopes
 scopes <- c("edi", "knb-lter-and", "knb-lter-arc", "knb-lter-bes",
