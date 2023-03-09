@@ -8,3 +8,4 @@ A development space for the EDI Annotations Working Group
 
 - "prepare_keywords.R": Ingests the EMLs downloaded above and processes them for their keywords. If run, overwrites the contents of the "parsed_eml" folder (this folder *is* tracked by git)
 
+- "kw_assign_ecosystem.R": Connects downloaded EML file information with the prepared keywords
