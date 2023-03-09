@@ -3,4 +3,4 @@
 .RData
 .Ruserdata
 eml_files/
-annotations-working-group.Rproj
+*.Rproj
