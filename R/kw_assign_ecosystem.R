@@ -10,10 +10,32 @@ search_term_path <- "search_term_mappings"
 
 output_path <- "assigned_kw"
 
+
+#-----------------------------------------------
+# set up googldrive according to https://nceas.github.io/scicomp.github.io/tutorials.html#using-the-googledrive-r-package
+
+# then get the latest version of the search_term_mapping files
+# set the folder url
+drive_url <- googledrive::as_id("https://drive.google.com/drive/folders/1bDyFKmGg6pL04fuQ9r5rtZvKwprfchty")
+
+# read content of folder
+drive_folder <- googledrive::drive_ls(path = drive_url)
+
+# download files into local folder
+for (j in 1:nrow(drive_folder)) {
+  
+  drive_download(file = drive_folder$id[j], 
+                 path = file.path(search_term_path, drive_folder$name[j]),
+                 overwrite = T)
+  
+}
+
+# --------------------------------------------------
+
 # Read in current keyword / search term path
 df_datasets <- read.csv(file.path(input_path, 'datasetKeywords.csv'), as.is = T, header = T)
 
-search_term <- read.csv(file.path(search_term_path,'search_term_mapping_ecosystem.csv'), header = T, as.is = T)
+search_term <- readxl::read_excel(file.path(search_term_path,'search_term_mapping_ecosystem.xlsx'))
 
 # Make an empty dataframe to write stuff into
 df_ds_subset <- data.frame(packageid = character(0),
