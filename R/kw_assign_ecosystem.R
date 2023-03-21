@@ -2,6 +2,7 @@
 # Load libraries
 library(tidyverse)
 library(EDIutils)
+library(googledrive)
 
 # Define paths
 input_path <- "parsed_eml"
@@ -35,6 +36,22 @@ for (j in 1:nrow(drive_folder)) {
 # Read in current keyword / search term path
 df_datasets <- read.csv(file.path(input_path, 'datasetKeywords.csv'), as.is = T, header = T)
 
+# df_datasets <- head(df_datasets, 100)
+df_exclude_terms <- readxl::read_excel(file.path(search_term_path, 'exclude_terms.xlsx'))
+
+exclude_terms <- unlist(df_exclude_terms$exclude_ecosystem)
+
+remove_terms <- tolower(paste(exclude_terms, collapse = '|'))
+
+df_datasets <- df_datasets %>%
+  mutate(abstract = str_remove_all(abstract, '\\n')) %>%
+  unite("text_combined", 2:4, sep = ' ', remove = F) %>%
+  mutate(text_combined = str_replace_all(text_combined, '\\W', ' ')) %>%
+  mutate(text_combined = tolower(text_combined)) %>%
+  mutate(text_combined = str_remove_all(text_combined, remove_terms))
+
+write.csv(df_datasets, file = file.path(output_path, "datasetKeywords_cleaned_ecosystems.csv"))
+
 search_term <- readxl::read_excel(file.path(search_term_path,'search_term_mapping_ecosystem.xlsx'))
 
 # Make an empty dataframe to write stuff into
@@ -48,32 +65,14 @@ df_ds_subset <- data.frame(packageid = character(0),
 for (j in 1:nrow(search_term)) {
   
   df_ds_subset_row <- df_datasets %>%
-    filter(str_detect(tolower(keywords), regex(search_term[[1]][j]))) %>%
+    filter(str_detect(tolower(text_combined), regex(search_term[[1]][j]))) %>%
     mutate(ecosystem_level_1 = search_term[[8]][j]) %>%
     mutate(ecosystem_level_2 = search_term[[9]][j]) %>%
-    mutate(ecosystem_level_3 = search_term[[10]][j]) %>%
-    select(-keywords, -abstract)
+    mutate(ecosystem_level_3 = search_term[[10]][j])
   
   df_ds_subset <- rbind(df_ds_subset, df_ds_subset_row)
 
-  df_ds_subset_row <- df_datasets %>%
-    filter(str_detect(tolower(title), regex(search_term[[1]][j]))) %>%
-    mutate(ecosystem_level_1 = search_term[[8]][j]) %>%
-    mutate(ecosystem_level_2 = search_term[[9]][j]) %>%
-    mutate(ecosystem_level_3 = search_term[[10]][j]) %>%
-    select(-keywords, -abstract)
-  
-  df_ds_subset <- rbind(df_ds_subset, df_ds_subset_row)
 
-  df_ds_subset_row <- df_datasets %>%
-    filter(str_detect(tolower(abstract), regex(search_term[[1]][j]))) %>%
-    mutate(ecosystem_level_1 = search_term[[8]][j]) %>%
-    mutate(ecosystem_level_2 = search_term[[9]][j]) %>%
-    mutate(ecosystem_level_3 = search_term[[10]][j]) %>%
-    select(-keywords, -abstract)
-  
-  df_ds_subset <- rbind(df_ds_subset, df_ds_subset_row)
-  
   # query_text <- paste('q=title:"',
   #                     str_replace_all(search_term[[1]][j], ' ', '+'),
   #                     '"+OR+abstract:"',
@@ -114,7 +113,7 @@ df_ds_out$record_id <- rownames(df_ds_out)
 # some sites are on abandoned agricultural land 
 
 df_ds_remove <- df_ds_out %>%
-  filter(str_detect(packageid, 'and|hbr|sgs|nwt') & ecosystem_level_1 == 'agricultural')
+  filter(str_detect(packageid, 'and|sgs|nwt') & ecosystem_level_1 == 'agricultural')
 
 # Use `anti_join` to exclude these
 df_ds_out <- anti_join(df_ds_out, df_ds_remove, by = "record_id")
