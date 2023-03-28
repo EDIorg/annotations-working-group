@@ -133,7 +133,7 @@ df_scope <- distinct(df_ds_out, scope)
 
 
 # Export output
-# write.csv(df_ds_out, file = file.path(output_path,'ecosystem.csv'), row.names = F)
+write.csv(df_ds_out, file = 'assigned_kw/combined/ecosystem.csv', row.names = F)
 
 # Export by lter site
 
