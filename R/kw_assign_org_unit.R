@@ -74,9 +74,9 @@ for (j in 1:nrow(search_term)) {
   
   df_ds_subset_row <- df_datasets %>%
     filter(str_detect(tolower(text_combined), regex(search_term[[1]][j]))) %>%
-    mutate(org_unit_level_1 = search_term[[8]][j]) %>%
-    mutate(org_unit_level_2 = search_term[[9]][j]) %>%
-    mutate(org_unit_level_3 = search_term[[10]][j])
+    mutate(org_unit_level_1 = search_term[[9]][j]) %>%
+    mutate(org_unit_level_2 = search_term[[10]][j]) %>%
+    mutate(org_unit_level_3 = search_term[[11]][j])
   
   df_ds_subset <- rbind(df_ds_subset, df_ds_subset_row)
   

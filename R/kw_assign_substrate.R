@@ -9,7 +9,7 @@ input_path <- "parsed_eml"
 
 search_term_path <- "search_term_mappings"
 
-output_path <- "assigned_kw/ecosystem"
+output_path <- "assigned_kw/substrate"
 
 
 #-----------------------------------------------
@@ -39,9 +39,14 @@ df_datasets <- read.csv(file.path(input_path, 'datasetKeywords.csv'), as.is = T,
 # df_datasets <- head(df_datasets, 100)
 df_exclude_terms <- readxl::read_excel(file.path(search_term_path, 'exclude_terms.xlsx'))
 
-exclude_terms <- unlist(df_exclude_terms$exclude_ecosystem)
+exclude_terms <- unlist(df_exclude_terms$exclude_substrate)
+exclude_terms <- exclude_terms[!is.na(exclude_terms)]
+exclude_terms <- unique(exclude_terms)
+
+if(length(exclude_terms) == 0) {exclude_terms <- c("0")}
 
 remove_terms <- tolower(paste(exclude_terms, collapse = '|'))
+
 
 df_datasets <- df_datasets %>%
   mutate(abstract = str_remove_all(abstract, '\\n')) %>%
@@ -53,54 +58,32 @@ df_datasets <- df_datasets %>%
   mutate(text_combined = str_remove_all(text_combined, remove_terms)) %>%
   mutate(text_combined = str_squish(text_combined))
 
-write.csv(df_datasets, file = file.path(input_path, "datasetKeywords_cleaned_ecosystems.csv"))
+write.csv(df_datasets, file = file.path(input_path, "datasetKeywords_cleaned_substrate.csv"))
 
-search_term <- readxl::read_excel(file.path(search_term_path,'search_term_mapping_ecosystem.xlsx'))
+search_term <- readxl::read_excel(file.path(search_term_path,'search_term_mapping_substrate.xlsx'))
 
 # Make an empty dataframe to write stuff into
 df_ds_subset <- data.frame(packageid = character(0),
                            title = character(0),
-                           ecosystem_level_1 = character(0),
-                           ecosystem_level_2 = character(0),
-                           ecosystem_level_3 = character(0))
+                           substrate_level_1 = character(0),
+                           substrate_level_2 = character(0),
+                           substrate_level_3 = character(0))
 
 # Collect relevant information on each search term
 for (j in 1:nrow(search_term)) {
   
   df_ds_subset_row <- df_datasets %>%
     filter(str_detect(tolower(text_combined), regex(search_term[[1]][j]))) %>%
-    mutate(ecosystem_level_1 = search_term[[9]][j]) %>%
-    mutate(ecosystem_level_2 = search_term[[10]][j]) %>%
-    mutate(ecosystem_level_3 = search_term[[11]][j])
+    mutate(substrate_level_1 = search_term[[9]][j]) %>%
+    mutate(substrate_level_2 = search_term[[10]][j]) %>%
+    mutate(substrate_level_3 = search_term[[11]][j])
   
   df_ds_subset <- rbind(df_ds_subset, df_ds_subset_row)
-
-
-  # query_text <- paste('q=title:"',
-  #                     str_replace_all(search_term[[1]][j], ' ', '+'),
-  #                     '"+OR+abstract:"',
-  #                     str_replace_all(search_term[[1]][j], ' ', '+'),
-  #                     '"&fl=packageid,title&',
-  #                     'fq=-scope:(ecotrends+lter-landsat+lter-landsat-ledaps)',
-  #                     sep = '')
-  # 
-  # df_res <- search_data_packages(query = query_text)
-  # 
-  # df_res <- df_res %>%
-  #   separate(packageid, c('scope', 'id', 'version'), sep = '\\.') %>%
-  #   mutate(packageid = paste(scope, id, sep = '.' )) %>%
-  #   mutate(ecosystem_term = search_term[[3]][j]) %>%
-  #   mutate(envo_id = search_term[[2]][j]) %>%
-  #   select(packageid, title, ecosystem_term, envo_id)
-  # 
-  # df_ds_subset <- rbind(df_ds_subset, df_res)
-  # 
   
 }
 
-# Keep only distinct values of this
 df_ds_sub_distinct <- df_ds_subset %>%
-  distinct(packageid, ecosystem_level_1, ecosystem_level_2, ecosystem_level_3)
+  distinct(packageid, substrate_level_1, substrate_level_2, substrate_level_3)
 
 # Attach the dataset info to these distinct values
 df_ds_out <- left_join(df_ds_sub_distinct, df_datasets, by = c('packageid'))
@@ -115,17 +98,17 @@ df_ds_out$record_id <- rownames(df_ds_out)
 # Identify datasets to drop
 # some sites are on abandoned agricultural land 
 
-df_ds_out <- df_ds_out %>%
-  mutate(del = if_else(str_detect(packageid, 'and|sgs|nwt') & ecosystem_level_2 == 'agricultural', 'rem', '')) %>%
-  mutate(del = if_else(str_detect(packageid, 'and|arc') & ecosystem_level_1 == 'coastal', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'arc') & ecosystem_level_2 == 'marine', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'bes') & ecosystem_level_1 == 'polar', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'bes|bnz') & ecosystem_level_2 == 'island', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'hfr') & ecosystem_level_2 == 'intertidal', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'sbc') & ecosystem_level_1 == 'terrestrial' & ecosystem_level_2 == 'forest', 'rem', del))
-
-df_ds_out <- df_ds_out %>%
-  filter(del == '')
+# df_ds_out <- df_ds_out %>%
+#   mutate(del = if_else(str_detect(packageid, 'and|sgs|nwt') & substrate_level_2 == 'agricultural', 'rem', '')) %>%
+#   mutate(del = if_else(str_detect(packageid, 'and|arc') & substrate_level_1 == 'coastal', 'rem', del)) %>%
+#   mutate(del = if_else(str_detect(packageid, 'arc') & substrate_level_2 == 'marine', 'rem', del)) %>%
+#   mutate(del = if_else(str_detect(packageid, 'bes') & substrate_level_1 == 'polar', 'rem', del)) %>%
+#   mutate(del = if_else(str_detect(packageid, 'bes|bnz') & substrate_level_2 == 'island', 'rem', del)) %>%
+#   mutate(del = if_else(str_detect(packageid, 'hfr') & substrate_level_2 == 'intertidal', 'rem', del)) %>%
+#   mutate(del = if_else(str_detect(packageid, 'sbc') & substrate_level_1 == 'terrestrial' & substrate_level_2 == 'forest', 'rem', del))
+# 
+# df_ds_out <- df_ds_out %>%
+#   filter(del == '')
 # -------------------------------------------
 
 df_ds_out <- separate(df_ds_out, packageid, into = c('scope', 'dataset_id'), sep = '\\.', remove = F)
@@ -133,7 +116,7 @@ df_scope <- distinct(df_ds_out, scope)
 
 
 # Export output
-write.csv(df_ds_out, file = 'assigned_kw/combined/ecosystem.csv', row.names = F)
+write.csv(df_ds_out, file = 'assigned_kw/combined/substrate.csv', row.names = F)
 
 # Export by lter site
 
@@ -142,12 +125,12 @@ for (j in 1:nrow(df_scope)) {
   df_ds_site <- df_ds_out %>%
     filter(scope == df_scope[[1]][j])
   
-  write.csv(df_ds_site, file = paste(output_path, '/', df_scope[[1]][j], '_ecosystem.csv', sep = ''), row.names = F)
+  write.csv(df_ds_site, file = paste(output_path, '/', df_scope[[1]][j], '_substrate.csv', sep = ''), row.names = F)
 }
 
-# no ecosystem information
+# no substrate information
 
-# Identify cases where the ecosystem is present
+# Identify cases where the substrate is present
 df_eco_pres <- distinct(df_ds_out, packageid)
 
 # Remove them via `anti_join`
@@ -157,8 +140,8 @@ df_eco_abs <- anti_join(df_datasets, df_eco_pres, by = c('packageid'))
 df_eco_abs <- separate(df_eco_abs, packageid, into = c('scope', 'dataset_id'), sep = '\\.', remove = F)
 df_scope <- distinct(df_eco_abs, scope)
 
-# Export the set of files that lack ecosystem information
-# write.csv(df_eco_abs, file = file.path(output_path, 'no_ecosystem.csv'), row.names = F)
+# Export the set of files that lack substrate information
+# write.csv(df_eco_abs, file = file.path(output_path, 'no_substrate.csv'), row.names = F)
 
 
 for (j in 1:nrow(df_scope)) {
@@ -166,13 +149,13 @@ for (j in 1:nrow(df_scope)) {
   df_ds_site <- df_eco_abs %>%
     filter(scope == df_scope[[1]][j])
   
-  write.csv(df_ds_site, file = paste(output_path, '/', df_scope[[1]][j], '_no_ecosystem.csv', sep = ''), row.names = F)
+  write.csv(df_ds_site, file = paste(output_path, '/', df_scope[[1]][j], '_no_substrate.csv', sep = ''), row.names = F)
 }
 
 # ----------------------------------
 # write all files to google drive
 
-upload_url <- googledrive::as_id("https://drive.google.com/drive/folders/1ddzwrXmMxQOJkYoIv7G5WcbAIoYaP_7W")
+upload_url <- googledrive::as_id("https://drive.google.com/drive/folders/1ECwnOrBbr8M55Yuq-fFICtJocMt4ntv4")
 
 file_names <- dir(output_path)
 
