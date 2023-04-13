@@ -122,6 +122,7 @@ df_ds_out <- df_ds_out %>%
   mutate(del = if_else(str_detect(packageid, 'bes') & ecosystem_level_1 == 'polar', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'bes|bnz') & ecosystem_level_2 == 'island', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'hfr') & ecosystem_level_2 == 'intertidal', 'rem', del)) %>%
+  mutate(del = if_else(str_detect(packageid, 'hbr') & ecosystem_level_1 == 'tropical', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'sbc') & ecosystem_level_1 == 'terrestrial' & ecosystem_level_2 == 'forest', 'rem', del))
 
 df_ds_out <- df_ds_out %>%
