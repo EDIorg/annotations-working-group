@@ -74,29 +74,8 @@ for (j in 1:nrow(search_term)) {
     mutate(ecosystem_level_3 = search_term[[11]][j])
   
   df_ds_subset <- rbind(df_ds_subset, df_ds_subset_row)
-
-
-  # query_text <- paste('q=title:"',
-  #                     str_replace_all(search_term[[1]][j], ' ', '+'),
-  #                     '"+OR+abstract:"',
-  #                     str_replace_all(search_term[[1]][j], ' ', '+'),
-  #                     '"&fl=packageid,title&',
-  #                     'fq=-scope:(ecotrends+lter-landsat+lter-landsat-ledaps)',
-  #                     sep = '')
-  # 
-  # df_res <- search_data_packages(query = query_text)
-  # 
-  # df_res <- df_res %>%
-  #   separate(packageid, c('scope', 'id', 'version'), sep = '\\.') %>%
-  #   mutate(packageid = paste(scope, id, sep = '.' )) %>%
-  #   mutate(ecosystem_term = search_term[[3]][j]) %>%
-  #   mutate(envo_id = search_term[[2]][j]) %>%
-  #   select(packageid, title, ecosystem_term, envo_id)
-  # 
-  # df_ds_subset <- rbind(df_ds_subset, df_res)
-  # 
-  
 }
+
 
 # Keep only distinct values of this
 df_ds_sub_distinct <- df_ds_subset %>%
@@ -123,6 +102,8 @@ df_ds_out <- df_ds_out %>%
   mutate(del = if_else(str_detect(packageid, 'bes|bnz') & ecosystem_level_2 == 'island', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'hfr') & ecosystem_level_2 == 'intertidal', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'hbr') & ecosystem_level_1 == 'tropical', 'rem', del)) %>%
+  mutate(del = if_else(str_detect(packageid, 'mcm') & ecosystem_level_2 == 'marine', 'rem', del)) %>%
+  mutate(del = if_else(str_detect(packageid, 'mcm') & ecosystem_level_2 == 'island', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'sbc') & ecosystem_level_1 == 'terrestrial' & ecosystem_level_2 == 'forest', 'rem', del))
 
 df_ds_out <- df_ds_out %>%

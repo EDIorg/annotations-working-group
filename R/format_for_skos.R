@@ -1,9 +1,9 @@
 
 library(tidyverse)
 
-df <- readxl::read_excel('search_term_mappings/search_term_mapping_substrate.xlsx')
+df <- readxl::read_excel('search_term_mappings/search_term_mapping_substance.xlsx')
 
-df <- read.csv('search_term_mappings/combined_search_terms_cg.csv', header = T, as.is = T)
+#df <- read.csv('search_term_mappings/combined_search_terms_cg.csv', header = T, as.is = T)
 
 df_main <- distinct(df, main)
 
@@ -48,5 +48,5 @@ df_for_skos_l3 <- df_l3 %>%
 
 df_for_skos <- rbind(df_for_skos_main, df_for_skos_l1, df_for_skos_l2, df_for_skos_l3)
 
-write.csv(df_for_skos, file = 'search_term_mappings/for_skos_all_cg.csv', row.names = F)
+write.csv(df_for_skos, file = 'search_term_mappings/skos/for_skos_substance.csv', row.names = F)
 

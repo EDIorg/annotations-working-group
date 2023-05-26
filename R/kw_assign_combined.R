@@ -136,6 +136,8 @@ df_ds_out <- df_ds_out %>%
   mutate(del = if_else(str_detect(packageid, 'bes|bnz') & level_2 == 'island', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'hfr') & level_2 == 'intertidal', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'hbr') & level_1 == 'tropical', 'rem', del)) %>%
+  mutate(del = if_else(str_detect(packageid, 'mcm') & level_2 == 'marine', 'rem', del)) %>%
+  mutate(del = if_else(str_detect(packageid, 'mcm') & level_2 == 'island', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'sbc') & level_1 == 'terrestrial' & level_2 == 'forest', 'rem', del))
 
 df_ds_out <- df_ds_out %>%
