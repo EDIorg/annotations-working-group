@@ -18,7 +18,6 @@ df_sub_long <- read.csv(file = file.path("data", "df_sub_long.csv"))
 df_terms_empty <- read.csv(file = file.path("data", "df_terms_empty.csv"), 
                            colClasses = "character")
 
-
 # Define UI for dataset search ----
 ui <- fluidPage(
 
@@ -28,6 +27,7 @@ ui <- fluidPage(
     # Sidebar ----
     sidebarLayout(
         sidebarPanel(
+          # Dropdown menus (i.e., facets) for each category of terms
           selectInput(inputId = "ecosystem", label = "Ecosystem", 
                       choices = df_terms_orig$term[df_terms_orig$main == "ecosystem"]),
           
@@ -66,9 +66,9 @@ ui <- fluidPage(
 
         # Main Panel ----
         mainPanel(
-          textOutput("numRows"),
-          textOutput("selected"),
-          DTOutput("view")
+          textOutput(outputId = "numRows"),
+          textOutput(outputId = "selected"),
+          DTOutput(outputId = "view")
         )
     )
 )
