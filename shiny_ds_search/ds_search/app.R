@@ -12,10 +12,11 @@ library(tidyverse)
 library(DT)
 
 #read in the data
-df_sub <- read.csv("data/df_sub.csv")
-df_terms_orig <- read.csv("data/df_terms.csv")
-df_sub_long <- read.csv("data/df_sub_long.csv")
-df_terms_empty <- read.csv("data/df_terms_empty.csv", colClasses = "character")
+df_sub <- read.csv(file = file.path("data", "df_sub.csv"))
+df_terms_orig <- read.csv(file = file.path("data", "df_terms.csv"))
+df_sub_long <- read.csv(file = file.path("data", "df_sub_long.csv"))
+df_terms_empty <- read.csv(file = file.path("data", "df_terms_empty.csv"), 
+                           colClasses = "character")
 
 
 # Define UI for dataset search
