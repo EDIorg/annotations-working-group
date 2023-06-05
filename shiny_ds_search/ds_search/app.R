@@ -81,16 +81,17 @@ server <- function(input, output, session) {
   
   sel <- reactiveValues(terms = c(""))
   
+  # On "Search" click, grab selected search terms
   observeEvent(input$searchButton, {
     
-    ecosystem_t <- ifelse(input$ecosystem == "", ".*", input$ecosystem)
-    discipline_t <- ifelse(input$discipline == "", ".*", input$discipline)
-    process_t <- ifelse(input$process == "", ".*", input$process)
-    org_unit_t <- ifelse(input$org_unit == "", ".*", input$org_unit)
-    organism_t <- ifelse(input$organism == "", ".*", input$organism)
-    methods_t <- ifelse(input$methods == "", ".*", input$methods)
-    events_t <- ifelse(input$events == "", ".*", input$events)
-    substrate_t <- ifelse(input$substrate == "", ".*", input$substrate)
+    ecosystem_t <- ifelse(test = input$ecosystem == "", yes = ".*", no = input$ecosystem)
+    discipline_t <- ifelse(test = input$discipline == "", yes = ".*", no = input$discipline)
+    process_t <- ifelse(test = input$process == "", yes = ".*", no = input$process)
+    org_unit_t <- ifelse(test = input$org_unit == "", yes = ".*", no = input$org_unit)
+    organism_t <- ifelse(test = input$organism == "", yes = ".*", no = input$organism)
+    methods_t <- ifelse(test = input$methods == "", yes = ".*", no = input$methods)
+    events_t <- ifelse(test = input$events == "", yes = ".*", no = input$events)
+    substrate_t <- ifelse(test = input$substrate == "", yes = ".*", no = input$substrate)
     
     sel$terms <- c(sel$terms, input$ecosystem,
                    input$discipline,
