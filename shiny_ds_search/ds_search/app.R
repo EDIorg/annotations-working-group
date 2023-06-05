@@ -81,6 +81,8 @@ server <- function(input, output, session) {
   
   sel <- reactiveValues(terms = c(""))
   
+  # Search button ----
+  
   # On "Search" click, grab selected search terms
   observeEvent(input$searchButton, {
     
@@ -93,6 +95,7 @@ server <- function(input, output, session) {
     events_t <- ifelse(test = input$events == "", yes = ".*", no = input$events)
     substrate_t <- ifelse(test = input$substrate == "", yes = ".*", no = input$substrate)
     
+    # Concatenate all terms (*not* just selected terms but all possibilities)
     sel$terms <- c(sel$terms, input$ecosystem,
                    input$discipline,
                    input$process,
@@ -102,6 +105,7 @@ server <- function(input, output, session) {
                    input$events,
                    input$substrate)
     
+    # Subset the table of datasets to only those that contain (one of) the keyword(s)
     df_ds$df <- df_ds$df %>%
       filter(str_detect(new_keywords, ecosystem_t),
              str_detect(new_keywords, discipline_t),
@@ -112,20 +116,30 @@ server <- function(input, output, session) {
              str_detect(new_keywords, events_t),
              str_detect(new_keywords, substrate_t))
     
+    # Grab just the package IDs of the datasets that contained (one of) the keyword(s)
     df_ds_id <- df_ds$df %>%
       select(packageid)
     
+    # Wrangle the more detailed dataset table
     df_terms <- df_sub_long %>%
+      # Pare down to needed columns
       select(packageid, main, level, term) %>%
-      inner_join(df_ds_id) %>%
+      # Retain only those datasets that contain (one of) the keyword(s)
+      inner_join(y = df_ds_id, by = c("packageid")) %>%
+      # Drop package ID now that we've used it to subset
       select(-packageid) %>%
+      # Remove level 3
       filter(level != "level_3") %>%
+      # Keep only unique rows
       distinct() %>%
-      rbind(df_terms_empty) %>%
+      # Attach empty terms (but match column order)
+      bind_rows(df_terms_empty) %>%
+      # Group by term
       group_by(main) %>%
+      # Sort
       arrange(main, level, term)
     
-    
+    # Re-set keyword inputs
     isolate(updateSelectInput(session,
                       inputId = "ecosystem",
                       choices = df_terms$term[df_terms$main == 'ecosystem']))
@@ -160,6 +174,7 @@ server <- function(input, output, session) {
     
     #output$selected <- renderText(paste(input$ecosystem, input$discipline))
     
+    # Generate human-readable table of dataframes that contain (one of) the keyword(s)
     output$view <- renderDT({
       
       df_out <- df_ds$df %>%
@@ -167,13 +182,15 @@ server <- function(input, output, session) {
       
     })
     
+    # Generate some small diagnostic output text too
     output$numRows <- renderText(paste("Datasets found: ", nrow(df_ds$df)))
-    output$selected <- renderText(paste("Search terms: ", paste(sel$terms, collapse = " ")))
+    output$selected <- renderText(paste("Search terms: ", paste(unique(sel$terms), 
+                                                                collapse = " ")))
     
-  }, ignoreInit = TRUE)
+  }, ignoreInit = TRUE) # Search button closing parentheses (observer end)
   
   
-  # reset button
+  # Reset button ----
   
   observeEvent(input$resetButton, {
     
@@ -181,7 +198,7 @@ server <- function(input, output, session) {
     
     sel$terms <- c("")
     
-
+    # Clear search terms
     isolate(updateSelectInput(session, 
                       inputId = "ecosystem",
                       choices = df_terms_orig$term[df_terms_orig$main == 'ecosystem']))
@@ -214,9 +231,10 @@ server <- function(input, output, session) {
                       inputId = "substrate",
                       choices = df_terms_orig$term[df_terms_orig$main == 'substrate']))
     
+    # Generate output text
+    output$numRows <- renderText(paste("Datasets found: ", nrow(df_ds$df)))
     
-    output$numRows <- renderText(paste("Datasets found: " ,nrow(df_ds$df)))
-    
+    # Generate output table
     output$view <- renderDT({ 
       
       df_out <- df_ds$df %>%
@@ -225,7 +243,7 @@ server <- function(input, output, session) {
     })
       
     
-  })
+  }) # Reset button closing parentheses (observer end)
   
   
   
