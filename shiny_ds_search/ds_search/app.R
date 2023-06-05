@@ -19,13 +19,13 @@ df_terms_empty <- read.csv(file = file.path("data", "df_terms_empty.csv"),
                            colClasses = "character")
 
 
-# Define UI for dataset search
+# Define UI for dataset search ----
 ui <- fluidPage(
 
     # Application title
     titlePanel("Search Datasets"),
 
-    # Sidebar 
+    # Sidebar ----
     sidebarLayout(
         sidebarPanel(
           selectInput(inputId = "ecosystem", label = "Ecosystem", 
@@ -64,7 +64,7 @@ ui <- fluidPage(
           
         ),
 
-        # Show a plot of the generated distribution
+        # Main Panel ----
         mainPanel(
           textOutput("numRows"),
           textOutput("selected"),
@@ -73,7 +73,8 @@ ui <- fluidPage(
     )
 )
 
-# Define server logic required to draw a histogram
+# Server ----
+# Logic for transforming inputs to outputs
 server <- function(input, output, session) {
   
   df_ds <- reactiveValues(df = df_sub)
@@ -238,5 +239,5 @@ server <- function(input, output, session) {
    
 }
 
-# Run the application 
+# Create App ----
 shinyApp(ui = ui, server = server)
