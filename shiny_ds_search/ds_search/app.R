@@ -17,6 +17,8 @@ df_terms_orig <- read.csv(file = file.path("data", "df_terms.csv"))
 df_sub_long <- read.csv(file = file.path("data", "df_sub_long.csv"))
 df_terms_empty <- read.csv(file = file.path("data", "df_terms_empty.csv"), 
                            colClasses = "character")
+df_sites <- tibble(siteid = c("", "edi", "and", "arc", "bes", "ble", "bnz", "cap", "cce", "cdr", "cwt", "fce", "gce", "hbr", "hfr", "jrn", "kbs", "knz", "luq", "mcm", "mcr", "msp", "nes", "ntl", "nwt", "pal", "pie", "sbc", "sev", "sgs", "vcr"))
+df_sites_empty <- tibble(siteid = c(""))
 
 # Define UI for dataset search ----
 ui <- fluidPage(
@@ -28,6 +30,8 @@ ui <- fluidPage(
     sidebarLayout(
         sidebarPanel(
           # Dropdown menus (i.e., facets) for each category of terms
+          selectInput(inputId = "site", label = "LTER Site",
+                      choices = df_sites$siteid),
           selectInput(inputId = "ecosystem", label = "Ecosystem", 
                       choices = df_terms_orig$term[df_terms_orig$main == "ecosystem"]),
           
@@ -57,6 +61,10 @@ ui <- fluidPage(
           selectInput(inputId = "substrate", label = "Substrate",
                       choices = df_terms_orig$term[df_terms_orig$main == "substrate"],
                       multiple = FALSE),
+          selectInput(inputId = "substance", label = "Substance",
+                      choices = df_terms_orig$term[df_terms_orig$main == "substance"],
+                      multiple = FALSE),
+          
           
           actionButton(inputId = "searchButton", label = "Search"),
 
@@ -86,6 +94,8 @@ server <- function(input, output, session) {
   # On "Search" click, grab selected search terms
   observeEvent(input$searchButton, {
     
+    site_t <- ifelse(test = input$site == "", yes = ".*", no = input$site)
+    
     ecosystem_t <- ifelse(test = input$ecosystem == "", yes = ".*", no = input$ecosystem)
     discipline_t <- ifelse(test = input$discipline == "", yes = ".*", no = input$discipline)
     process_t <- ifelse(test = input$process == "", yes = ".*", no = input$process)
@@ -94,31 +104,41 @@ server <- function(input, output, session) {
     methods_t <- ifelse(test = input$methods == "", yes = ".*", no = input$methods)
     events_t <- ifelse(test = input$events == "", yes = ".*", no = input$events)
     substrate_t <- ifelse(test = input$substrate == "", yes = ".*", no = input$substrate)
+    substance_t <- ifelse(test = input$substance == "", yes = ".*", no = input$substance)
     
     # Concatenate all terms (*not* just selected terms but all possibilities)
-    sel$terms <- c(sel$terms, input$ecosystem,
+    sel$terms <- c(sel$terms, input$site,
+                   input$ecosystem,
                    input$discipline,
                    input$process,
                    input$org_unit,
                    input$organism,
                    input$methods,
                    input$events,
-                   input$substrate)
+                   input$substrate,
+                   input$subtance)
     
     # Subset the table of datasets to only those that contain (one of) the keyword(s)
     df_ds$df <- df_ds$df %>%
-      filter(str_detect(new_keywords, ecosystem_t),
+      filter(str_detect(packageid, site_t),
+             str_detect(new_keywords, ecosystem_t),
              str_detect(new_keywords, discipline_t),
              str_detect(new_keywords, process_t),
              str_detect(new_keywords, org_unit_t),
              str_detect(new_keywords, organism_t),
              str_detect(new_keywords, methods_t),
              str_detect(new_keywords, events_t),
-             str_detect(new_keywords, substrate_t))
+             str_detect(new_keywords, substrate_t),
+             str_detect(new_keywords, substance_t))
     
-    # Grab just the package IDs of the datasets that contained (one of) the keyword(s)
+    # Grab just the package IDs of the datasets that contained (all of) the keyword(s)
     df_ds_id <- df_ds$df %>%
       select(packageid)
+    
+    df_sites_sub <- df_ds$df %>%
+      distinct(siteid) %>%
+      bind_rows(df_sites_empty) %>%
+      arrange(siteid)
     
     # Wrangle the more detailed dataset table
     df_terms <- df_sub_long %>%
@@ -140,37 +160,46 @@ server <- function(input, output, session) {
       arrange(main, level, term)
     
     # Re-set keyword inputs
-     isolate(updateSelectInput(session,
-                       inputId = "ecosystem",
-                       choices = df_terms$term[df_terms$main == 'ecosystem']))
-     
-     isolate(updateSelectInput(session,
-                       inputId = "discipline",
-                       choices = df_terms$term[df_terms$main == 'discipline']))
-     
-     isolate(updateSelectInput(session,
-                       inputId = "process",
-                       choices = df_terms$term[df_terms$main == 'process']))
-     
-     isolate(updateSelectInput(session,
-                       inputId = "org_unit",
-                       choices = df_terms$term[df_terms$main == 'org_unit']))
-     
-     isolate(updateSelectInput(session,
-                       inputId = "organism",
-                       choices = df_terms$term[df_terms$main == 'organism']))
-     
-     isolate(updateSelectInput(session,
-                       inputId = "methods",
-                       choices = df_terms$term[df_terms$main == 'methods']))
-     
-     isolate(updateSelectInput(session,
-                       inputId = "events",
-                       choices = df_terms$term[df_terms$main == 'events']))
-     
-     isolate(updateSelectInput(session,
-                       inputId = "substrate",
-                       choices = df_terms$term[df_terms$main == 'substrate']))
+    isolate(updateSelectInput(session,
+                              inputId = "site",
+                              choices = df_sites_sub$siteid))
+    
+    isolate(updateSelectInput(session,
+                              inputId = "ecosystem",
+                              choices = df_terms$term[df_terms$main == 'ecosystem']))
+    
+    isolate(updateSelectInput(session,
+                              inputId = "discipline",
+                              choices = df_terms$term[df_terms$main == 'discipline']))
+    
+    isolate(updateSelectInput(session,
+                              inputId = "process",
+                              choices = df_terms$term[df_terms$main == 'process']))
+    
+    isolate(updateSelectInput(session,
+                              inputId = "org_unit",
+                              choices = df_terms$term[df_terms$main == 'org_unit']))
+    
+    isolate(updateSelectInput(session,
+                              inputId = "organism",
+                              choices = df_terms$term[df_terms$main == 'organism']))
+    
+    isolate(updateSelectInput(session,
+                              inputId = "methods",
+                              choices = df_terms$term[df_terms$main == 'methods']))
+    
+    isolate(updateSelectInput(session,
+                              inputId = "events",
+                              choices = df_terms$term[df_terms$main == 'events']))
+    
+    isolate(updateSelectInput(session,
+                              inputId = "substrate",
+                              choices = df_terms$term[df_terms$main == 'substrate']))
+    
+    isolate(updateSelectInput(session,
+                              inputId = "substance",
+                              choices = df_terms$term[df_terms$main == 'substance']))
+    
     
     output$selected <- renderText(paste(input$ecosystem, input$discipline))
     
@@ -199,37 +228,45 @@ server <- function(input, output, session) {
     sel$terms <- c("")
     
     # Clear search terms
+    isolate(updateSelectInput(session,
+                              inputId = "site",
+                              choices = df_sites$siteid))
+            
     isolate(updateSelectInput(session, 
-                      inputId = "ecosystem",
-                      choices = df_terms_orig$term[df_terms_orig$main == 'ecosystem']))
+                              inputId = "ecosystem",
+                              choices = df_terms_orig$term[df_terms_orig$main == 'ecosystem']))
     
     isolate(updateSelectInput(session, 
-                      inputId = "discipline",
-                      choices = df_terms_orig$term[df_terms_orig$main == 'discipline']))
+                              inputId = "discipline",
+                              choices = df_terms_orig$term[df_terms_orig$main == 'discipline']))
     
     isolate(updateSelectInput(session, 
-                      inputId = "process",
-                      choices = df_terms_orig$term[df_terms_orig$main == 'process']))
+                              inputId = "process",
+                              choices = df_terms_orig$term[df_terms_orig$main == 'process']))
     
     isolate(updateSelectInput(session, 
-                      inputId = "org_unit",
-                      choices = df_terms_orig$term[df_terms_orig$main == 'org_unit']))
+                              inputId = "org_unit",
+                              choices = df_terms_orig$term[df_terms_orig$main == 'org_unit']))
     
     isolate(updateSelectInput(session, 
-                      inputId = "organism",
-                      choices = df_terms_orig$term[df_terms_orig$main == 'organism']))
+                              inputId = "organism",
+                              choices = df_terms_orig$term[df_terms_orig$main == 'organism']))
     
     isolate(updateSelectInput(session, 
-                      inputId = "methods",
-                      choices = df_terms_orig$term[df_terms_orig$main == 'methods']))
+                              inputId = "methods",
+                              choices = df_terms_orig$term[df_terms_orig$main == 'methods']))
     
     isolate(updateSelectInput(session, 
-                      inputId = "events",
-                      choices = df_terms_orig$term[df_terms_orig$main == 'events']))
+                              inputId = "events",
+                              choices = df_terms_orig$term[df_terms_orig$main == 'events']))
     
     isolate(updateSelectInput(session, 
-                      inputId = "substrate",
-                      choices = df_terms_orig$term[df_terms_orig$main == 'substrate']))
+                              inputId = "substrate",
+                              choices = df_terms_orig$term[df_terms_orig$main == 'substrate']))
+
+    isolate(updateSelectInput(session, 
+                              inputId = "substance",
+                              choices = df_terms_orig$term[df_terms_orig$main == 'substance']))
     
     # Generate output text
     output$numRows <- renderText(paste("Datasets found: ", nrow(df_ds$df)))
