@@ -38,6 +38,8 @@ file_names <- dir(search_term_path, pattern = "search_term_mappin*")
 
 df_terms <- readxl::read_excel(file.path(search_term_path, file_names[1]))
 
+df_terms <- select(df_terms, 1:12)
+
 for (j in 2:length(file_names)) {
   df_others <- readxl::read_excel(file.path(search_term_path, file_names[j]))
   
@@ -138,7 +140,11 @@ df_ds_out <- df_ds_out %>%
   mutate(del = if_else(str_detect(packageid, 'hbr') & level_1 == 'tropical', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'mcm') & level_2 == 'marine', 'rem', del)) %>%
   mutate(del = if_else(str_detect(packageid, 'mcm') & level_2 == 'island', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'sbc') & level_1 == 'terrestrial' & level_2 == 'forest', 'rem', del))
+  mutate(del = if_else(str_detect(packageid, 'sbc') & level_1 == 'terrestrial' & level_2 == 'forest', 'rem', del)) %>%
+  mutate(del = if_else(str_detect(packageid, 'nes') & level_3 == 'stream', 'rem', del)) %>%
+  mutate(del = if_else(str_detect(packageid, 'nes') & level_2 == 'hillslope', 'rem', del)) %>%
+  mutate(del = if_else(str_detect(packageid, 'nes') & level_2 == 'wood', 'rem', del)) %>%
+  mutate(del = if_else(str_detect(packageid, 'nes') & level_2 == 'sand', 'rem', del))
 
 df_ds_out <- df_ds_out %>%
   filter(del == '')
@@ -150,9 +156,12 @@ df_scope <- distinct(df_ds_out, scope)
 
 
 # Export output
+# this file is used in reformatting and in generating data for the shiny app
+
 write.csv(df_ds_out, file = 'assigned_kw/combined/combined.csv', row.names = F)
 
 # Export by lter site
+# I have not been using this for a while
 
 for (j in 1:nrow(df_scope)) {
   
@@ -188,6 +197,7 @@ for (j in 1:nrow(df_scope)) {
 
 # ----------------------------------
 # write all files to google drive
+# this takes forever
 
 upload_url <- googledrive::as_id("https://drive.google.com/drive/folders/1eIGRe8jPoNNnlyyEWrBEXe--RNEBXJYo")
 
