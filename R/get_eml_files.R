@@ -19,6 +19,7 @@ dir.create(path = eml_path, showWarnings = F)
 downloaded_xmls <- list.files(path = eml_path, pattern = '*.xml')
 
 # Define scopes
+
 scopes <- c("edi", "knb-lter-and", "knb-lter-arc", "knb-lter-bes",
             "knb-lter-ble", "knb-lter-bnz", "knb-lter-cap",
             "knb-lter-cce", "knb-lter-cdr", "knb-lter-cwt",
@@ -69,9 +70,49 @@ for (j in 1:length(scopes)) {
         message("Downloaded XML ", i, " of ", length(identifiers))
       }
     }
+    
+    #slow down the the requests to avoid running into PASTA's rate limitations
+    Sys.sleep(1)
   }
   
   # Print finished message for scope too
   message("Finished downloading identifiers in scope: '", scopes[j], "'")
 }
+
+# remove the old files when a new one was downloaded
+
+# read the new list of files after download
+updated_file_list <- list.files(path = eml_path, pattern = '*.xml')
+
+# make into data frame
+df_files <- data_frame(file_name = updated_file_list)
+
+# separate file name into parts
+df_files <- df_files %>%
+  separate(file_name, c("scope", "id", "version", "extension"), sep = "\\.") %>%
+  mutate(package = paste(scope, id, sep = "."))
+
+# find the older duplicate 
+df_dups <- duplicated(df_files$package, fromLast = T)
+
+# add column of true false for being the older duplicate
+df_files$dups <- df_dups
+
+# put the file name back together
+df_dup_files <- df_files %>%
+  filter(dups == TRUE) %>%
+  mutate(file_name = paste(scope, id, version, extension, sep = "."))
+
+# remove the older EML version when a new on was downloaded
+for (j in 1:nrow(df_dup_files)) {
+  
+  print(df_dup_files$file_name[j])
+  
+  file.remove(paste(eml_path, df_dup_files$file_name[j], sep = "/"))
+  
+  
+}
+  
+
+
 
