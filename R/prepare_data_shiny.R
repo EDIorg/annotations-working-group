@@ -11,11 +11,10 @@ df_terms_empty <- data.frame(main, level, term)
 
 df_sub_long <- df %>%
   #filter(str_detect(packageid, "ntl|arc|sbc")) %>%
-  select(packageid,main, level_1, level_2, level_3, title, abstract) %>%
-  separate(packageid, into = c("siteid", "package_num"), sep = "\\.", remove = F) %>%
-  mutate(siteid = str_remove(siteid, "knb-lter-")) %>%
-  select(-package_num) %>%
-  gather(level, term, 4:6) %>%
+  select(packageid, scope, main, level_1, level_2, level_3, title, abstract) %>%
+  mutate(siteid = str_remove(scope, "knb-lter-")) %>%
+  select(-scope) %>%
+  gather(level, term, 3:5) %>%
   filter(!is.na(term)) %>%
   distinct()
 
@@ -26,6 +25,8 @@ df_sub <- df_sub_long %>%
   mutate(new_keywords = str_remove_all(new_keywords, 'NA,')) %>%
   mutate(new_keywords = str_remove_all(new_keywords, ', NA')) %>%
   mutate(new_keywords = str_replace_all(new_keywords, ',,', ',')) %>%
+  mutate(new_keywords = str_replace(new_keywords, '^', ', ')) %>%
+  mutate(new_keywords = paste(new_keywords, ",", sep = "")) %>%
   select(-level,-term, -main) %>%
   slice(1)
 
@@ -46,4 +47,6 @@ write.csv(df_terms, file = "shiny_ds_search/ds_search/data/df_terms.csv", row.na
 write.csv(df_terms_empty, file = "shiny_ds_search/ds_search/data/df_terms_empty.csv", row.names = F)
 
 save(df_sub, df_terms, file = "shinyds_search/ds_search/data/edi_ecosystem.RData")
+
+
 
