@@ -1,4 +1,3 @@
-
 # Load libraries
 library(tidyverse)
 library(EDIutils)
@@ -32,7 +31,7 @@ for (j in 1:nrow(drive_folder)) {
 }
 
 # --------------------------------------------------
-# make a combined file
+# make a combined file of all search terms and their mappings
 
 file_names <- dir(search_term_path, pattern = "search_term_mappin*")
 
@@ -73,7 +72,8 @@ df_ds_subset <- data.frame(packageid = character(0),
                            main = character(0),
                            level_1 = character(0),
                            level_2 = character(0),
-                           level_3 = character(0))
+                           level_3 = character(0),
+                           searchterm = character(0))
 
 for (k in 1:length(main_categories)) {
   
@@ -87,10 +87,10 @@ for (k in 1:length(main_categories)) {
   remove_terms <- tolower(paste(exclude_terms, collapse = '|'))
   
   df_datasets <- df_datasets_raw %>%
-    mutate(abstract = str_remove_all(abstract, '\\n')) %>%
-    unite("text_combined", 2:4, sep = ' ', remove = F) %>%
+    unite("text_combined", 2,3,5,6, sep = ' ', remove = F)%>% # this will get entities and attributes
+    #unite("text_combined", 2:4, sep = ' ', remove = F) %>% #this will get abstracts
+    #unite("text_combined", 2:6,sep = ' ', remove = F) %>% #this will get everything
     mutate(text_combined = str_trim(text_combined, side = c("both"))) %>%
-    mutate(text_combined = str_replace_all(text_combined, '\\W', ' ')) %>%
     mutate(text_combined = str_squish(text_combined)) %>%
     mutate(text_combined = tolower(text_combined)) %>%
     mutate(text_combined = str_remove_all(text_combined, remove_terms)) %>%
@@ -110,7 +110,8 @@ for (k in 1:length(main_categories)) {
       mutate(main = search_term$main[j]) %>%
       mutate(level_1 = search_term$level_1[j]) %>%
       mutate(level_2 = search_term$level_2[j]) %>%
-      mutate(level_3 = search_term$level_3[j])
+      mutate(level_3 = search_term$level_3[j]) %>%
+      mutate(searchterm = search_term[[1]][j])
     
     df_ds_subset <- rbind(df_ds_subset, df_ds_subset_row)
     
@@ -118,6 +119,10 @@ for (k in 1:length(main_categories)) {
   
 }
 
+write.csv(df_ds_subset, file = paste(output_path, "combined_with_searchterms.csv", sep = "/"), row.names = F)
+
+df_ds_subset <- df_ds_subset %>%
+  select(-searchterm)
 
 df_ds_out <- df_ds_subset %>%
   distinct(packageid, main, level_1, level_2, level_3, .keep_all = T)
@@ -132,19 +137,19 @@ df_ds_out <- df_ds_subset %>%
 
 df_ds_out <- df_ds_out %>%
   mutate(del = if_else(str_detect(packageid, 'and|sgs|nwt') & level_2 == 'agricultural', 'rem', '')) %>%
-  mutate(del = if_else(str_detect(packageid, 'and|arc') & level_1 == 'coastal', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'arc') & level_2 == 'marine', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'bes') & level_1 == 'polar', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'bes|bnz') & level_2 == 'island', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'hfr') & level_2 == 'intertidal', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'hbr') & level_1 == 'tropical', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'mcm') & level_2 == 'marine', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'mcm') & level_2 == 'island', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'sbc') & level_1 == 'terrestrial' & level_2 == 'forest', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'nes') & level_3 == 'stream', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'nes') & level_2 == 'hillslope', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'nes') & level_2 == 'wood', 'rem', del)) %>%
-  mutate(del = if_else(str_detect(packageid, 'nes') & level_2 == 'sand', 'rem', del))
+  mutate(del = if_else(str_detect(packageid, 'and|arc') & level_1 == 'coastal', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'arc') & level_2 == 'marine', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'bes') & level_1 == 'polar', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'bes|bnz') & level_2 == 'island', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'hfr') & level_2 == 'intertidal', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'hbr') & level_1 == 'tropical', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'mcm') & level_2 == 'marine', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'mcm') & level_2 == 'island', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'sbc') & level_1 == 'terrestrial' & level_2 == 'forest', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'nes') & level_3 == 'stream', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'nes') & level_2 == 'hillslope', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'nes') & level_2 == 'wood', 'rem', '')) %>%
+  mutate(del = if_else(str_detect(packageid, 'nes') & level_2 == 'sand', 'rem', ''))
 
 df_ds_out <- df_ds_out %>%
   filter(del == '')
@@ -152,7 +157,6 @@ df_ds_out <- df_ds_out %>%
 # -------------------------------------------
 
 df_ds_out <- separate(df_ds_out, packageid, into = c('scope', 'dataset_id'), sep = '\\.', remove = F)
-df_scope <- distinct(df_ds_out, scope)
 
 
 # Export output
@@ -160,57 +164,4 @@ df_scope <- distinct(df_ds_out, scope)
 
 write.csv(df_ds_out, file = 'assigned_kw/combined/combined.csv', row.names = F)
 
-# Export by lter site
-# I have not been using this for a while
-
-for (j in 1:nrow(df_scope)) {
-  
-  df_ds_site <- df_ds_out %>%
-    filter(scope == df_scope[[1]][j])
-  
-  write.csv(df_ds_site, file = paste(output_path, '/', df_scope[[1]][j], '_combined.csv', sep = ''), row.names = F)
-}
-
-# no substrate information
-
-# Identify cases where the substrate is present
-df_eco_pres <- distinct(df_ds_out, packageid)
-
-# Remove them via `anti_join`
-df_eco_abs <- anti_join(df_datasets_raw, df_eco_pres, by = c('packageid'))
-
-# 
-df_eco_abs <- separate(df_eco_abs, packageid, into = c('scope', 'dataset_id'), sep = '\\.', remove = F)
-df_scope <- distinct(df_eco_abs, scope)
-
-# Export the set of files that lack substrate information
-# write.csv(df_eco_abs, file = file.path(output_path, 'no_substrate.csv'), row.names = F)
-
-
-for (j in 1:nrow(df_scope)) {
-  
-  df_ds_site <- df_eco_abs %>%
-    filter(scope == df_scope[[1]][j])
-  
-  write.csv(df_ds_site, file = paste(output_path, '/', df_scope[[1]][j], '_no_kw.csv', sep = ''), row.names = F)
-}
-
-# ----------------------------------
-# write all files to google drive
-# this takes forever
-
-upload_url <- googledrive::as_id("https://drive.google.com/drive/folders/1eIGRe8jPoNNnlyyEWrBEXe--RNEBXJYo")
-
-file_names <- dir(output_path)
-
-for (j in 1:length(file_names)) {
-  
-  drive_upload(file.path(output_path, file_names[j]),
-               path = upload_url,
-               type = "spreadsheet",
-               overwrite = TRUE)
-  
-  
-  
-}
 
