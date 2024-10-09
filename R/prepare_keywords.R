@@ -18,6 +18,8 @@ df <- data.frame(fileName = character(0),
                  title = character(0),
                  abstract = character(0),
                  keywords = character(0),
+                 entity_info = character(0),
+                 attribute_info = character(0),
                  stringsAsFactors = FALSE) 
 
 # For each file...
@@ -27,21 +29,48 @@ for (i in 1:length(file_names)) {
   file_name <- file.path(eml_path, file_names[i])
   
   # Read in that file
+  
   xml_file <- read_xml(file_name)
   
   # Strip out some key components of that XML file
   eml_title <- xml_text(xml_find_first(xml_file, './/title'))
+  eml_title <- str_replace_all(eml_title, '\\n', ' ')
+  eml_title <- str_replace_all(eml_title, '\\W', ' ')
   
   eml_abstract <- xml_text(xml_find_first(xml_file, './/abstract'))
-
+  eml_abstract <- str_replace_all(eml_abstract, '\\n', ' ')
+  eml_abstract <- str_replace_all(eml_abstract, '\\W', ' ')
+  
   eml_keywords <- xml_text(xml_find_all(xml_file, './/keyword'))
-  all_keywords <- paste(eml_keywords, collapse=",")
+  all_keywords <- paste(eml_keywords, collapse=" ")
+  all_keywords <- str_replace_all(all_keywords, '\\n', ' ')
+  all_keywords <- str_replace_all(all_keywords, '\\W', ' ')
+  
+  eml_entity <- xml_text(xml_find_all(xml_file, './/entityDescription'))
+  all_entities <- paste(eml_entity, collapse = ' ')
+  all_entities <- str_replace_all(all_entities, '\\n', ' ')
+  all_entities <- str_replace_all(all_entities, '\\W', ' ')
+  
+  #some of these are repeating a lot of text, cut them down to fit a  csv cell
+  all_entities <- str_sub(all_entities, 1, 5000)
+  
+  eml_attribute_def <- xml_text(xml_find_all(xml_file, './/attributeDefinition'))
+  eml_attribute_label <- xml_text(xml_find_all(xml_file, './/attributeLabel'))
+  all_attribute_defs <- paste(eml_attribute_def, collapse = ' ')
+  all_attribute_labels <- paste(eml_attribute_label, collapse = ' ')
+  all_attributes <- paste(all_attribute_defs, all_attribute_defs, sep = ' ')
+  all_attributes <- str_replace_all(all_attributes, '\\n', ' ')
+  all_attributes <- str_replace_all(all_attributes, '\\W', ' ')
+  all_attributes <- str_squish(all_attributes)
+  all_attributes <- str_sub(all_attributes, 1, 5000)
   
   # Store them in a dataframe
   df_part <- data.frame(fileName = file_names[i],
                         title = eml_title,
                         abstract = eml_abstract,
-                        keywords = all_keywords)
+                        keywords = all_keywords,
+                        entity_info = all_entities,
+                        attribute_info = all_attributes)
   
   # Attach that dataframe to the larger dataframe of all files
   df <- rbind(df, df_part)
@@ -51,87 +80,7 @@ for (i in 1:length(file_names)) {
 df_metadata <- df %>%
   separate(fileName, into = c('scope', 'package_id', 'version', NA), sep = '\\.') %>%
   mutate(packageid = paste(scope, package_id, sep = '.')) %>%
-  select(packageid, title, keywords, abstract)
+  select(packageid, title, keywords, abstract,entity_info, attribute_info)
 
 # Export this
 write.csv(df_metadata, file = file.path(output_path, 'datasetKeywords.csv'), row.names = F)
-
-# ---------------------------------------------------------------------------
-
-# make keyword pairs and counts
-
-df_keywords <- df_metadata %>%
-  mutate(keywords = tolower(keywords))
-
-df_kw_single <- data.frame(single_kw = character(0),
-                           package_id = character(0))
-
-# For each keyword...
-for (i in 1:nrow(df_keywords)) {
-  
-  # Identify each keyword & package ID
-  kw <- str_split(df_keywords$keywords[i], ',')
-  package_id <- df_keywords$packageid[i]
-  
-  # Assemble data object of each keyword / package ID
-  df_kw <- data.frame(single_kw = kw[[1]]) %>%
-    mutate(package_id = package_id)
-  
-  # Bind this to the larger object
-  df_kw_single <- rbind(df_kw_single, df_kw)
-  
-}
-
-# clean up some keywords
-df_kw_edited <- df_kw_single %>%
-  mutate(single_kw = str_replace_all(single_kw, "[_\\/\\-\\:\\&]", " ")) %>%
-  mutate(single_kw = str_trim(single_kw)) %>%
-  mutate(single_kw = str_replace(single_kw, '.*disturbance.*', 'disturbance')) %>%
-  mutate(single_kw = str_replace(single_kw, '.*population.*', 'populations')) %>%
-  mutate(single_kw = str_replace(single_kw, '.*inorganic nutrient.*', 'inorganic nutrients')) %>%
-  mutate(single_kw = str_replace(single_kw, '.*product.*', 'primary productivity')) %>%
-  mutate(single_kw = str_replace(single_kw, '.*organic matter.*', 'organic matter'))
-
-# check out the keywords and what to remove to make more sense
-df_kw_count_raw <- df_kw_edited %>%
-  group_by(single_kw) %>%
-  summarise(count = n())
-
-# Export
-write.csv(df_kw_count_raw, file = file.path(output_path, 'keyword_count.csv'), row.names = F)
-
-# Get nested keywords
-df_kw_nested <- df_kw_edited %>%
-  group_by(package_id) %>%
-  nest(keywords = single_kw)
-
-# Make an empty dataframe to store stuff in
-df_kw_together <- data.frame(word_pairs=character())
-
-# For each file...
-for (i in 1:nrow(df_kw_nested)) {
-  
-  # Unlist the keywords
-  kw <- unlist(df_kw_nested$keywords[i])
-  
-  # Identify nested keywords
-  m <- outer(kw, kw, paste, sep = "|")
-  
-  # Drop duplicate pairs
-  u <- m[!lower.tri(m)]
-  
-  # Coerce to dataframe
-  df_upper <- data.frame(u)
-  
-  # Bind with other files' contents
-  df_kw_together <- rbind(df_upper, df_kw_together)
-  
-}
-
-# Wrangle the resulting object
-df_kw_pairs <- df_kw_together %>%
-  separate(u, into = c('from', 'to'), sep = "\\|") %>%
-  filter(from != to)
-
-# export locally
-write.csv(df_kw_pairs, file = file.path(output_path, 'keyword_pairs.csv'), row.names = F)
