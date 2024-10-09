@@ -96,15 +96,15 @@ server <- function(input, output, session) {
     
     site_t <- ifelse(test = input$site == "", yes = ".*", no = input$site)
     
-    ecosystem_t <- ifelse(test = input$ecosystem == "", yes = ".*", no = input$ecosystem)
-    discipline_t <- ifelse(test = input$discipline == "", yes = ".*", no = input$discipline)
-    process_t <- ifelse(test = input$process == "", yes = ".*", no = input$process)
-    org_unit_t <- ifelse(test = input$org_unit == "", yes = ".*", no = input$org_unit)
-    organism_t <- ifelse(test = input$organism == "", yes = ".*", no = input$organism)
-    methods_t <- ifelse(test = input$methods == "", yes = ".*", no = input$methods)
-    events_t <- ifelse(test = input$events == "", yes = ".*", no = input$events)
-    substrate_t <- ifelse(test = input$substrate == "", yes = ".*", no = input$substrate)
-    substance_t <- ifelse(test = input$substance == "", yes = ".*", no = input$substance)
+    ecosystem_t <- ifelse(test = input$ecosystem == "", yes = ".*", no = paste(", ",input$ecosystem, ",", sep = ""))
+    discipline_t <- ifelse(test = input$discipline == "", yes = ".*", no = paste(", ",input$discipline, ",", sep = ""))
+    process_t <- ifelse(test = input$process == "", yes = ".*", no = paste(", ",input$process, ",", sep = ""))
+    org_unit_t <- ifelse(test = input$org_unit == "", yes = ".*", no = paste(", ",input$org_unit, ",", sep = ""))
+    organism_t <- ifelse(test = input$organism == "", yes = ".*", no = paste(", ",input$organism, ",", sep = ""))
+    methods_t <- ifelse(test = input$methods == "", yes = ".*", no = paste(", ",input$methods, ",", sep = ""))
+    events_t <- ifelse(test = input$events == "", yes = ".*", no = paste(", ",input$events, ",", sep = ""))
+    substrate_t <- ifelse(test = input$substrate == "", yes = ".*", no = paste(", ",input$substrate, ",", sep = ""))
+    substance_t <- ifelse(test = input$substance == "", yes = ".*", no = paste(", ",input$substance, ",", sep = ""))
     
     # Concatenate all terms (*not* just selected terms but all possibilities)
     sel$terms <- c(sel$terms, input$site,
@@ -116,7 +116,7 @@ server <- function(input, output, session) {
                    input$methods,
                    input$events,
                    input$substrate,
-                   input$subtance)
+                   input$substance)
     
     # Subset the table of datasets to only those that contain (one of) the keyword(s)
     df_ds$df <- df_ds$df %>%
@@ -149,7 +149,7 @@ server <- function(input, output, session) {
       # Drop package ID now that we've used it to subset
       select(-packageid) %>%
       # Remove level 3
-      filter(level != "level_3") %>%
+      # filter(level != "level_3") %>%
       # Keep only unique rows
       distinct() %>%
       # Attach empty terms (but match column order)
@@ -297,3 +297,4 @@ server <- function(input, output, session) {
 
 # Create App ----
 shinyApp(ui = ui, server = server)
+
